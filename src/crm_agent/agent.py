@@ -25,7 +25,7 @@ from deepagents.backends import (
 from langchain.chat_models import init_chat_model
 from langsmith import Client
 
-from crm_agent.utils.middleware import StepBudgetMiddleware
+from crm_agent.utils.middleware import GuardrailMiddleware
 from crm_agent.utils.tools import CRM_TOOLS
 
 # Hub identifiers — the source of truth for this agent's context.
@@ -88,5 +88,6 @@ agent = create_deep_agent(
     backend=_backend(),
     skills=["/skills/"],
     memory=["/memory/AGENTS.md"],
-    middleware=[StepBudgetMiddleware(max_ai_messages=20)],
+    middleware=[GuardrailMiddleware()],
+    interrupt_on={"update_record": True},
 ).with_config({"recursion_limit": 50})

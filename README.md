@@ -16,7 +16,7 @@ src/crm_agent/
   agent.py           compiled graph `agent`; pulls prompt/skills/memory from the Hub
   crm.py             dummy in-memory CRM: one SCHEMA drives data + validation
   utils/tools.py     get_crm_schema / search / get / create / update
-  utils/middleware.py  step-budget guard
+  utils/middleware.py  guardrail middleware (refuses destructive requests)
 docs/TOOL_DESIGN.md  tool-creation best practices
 evals/run_eval.py    optional offline eval
 Makefile             make dev / make deploy
@@ -64,3 +64,11 @@ make deploy   # uv run langgraph deploy
 - **LangSmith auth**: use a **workspace-scoped** key. An org/multi-workspace key
   resolves no tenant — set `LANGSMITH_WORKSPACE_ID` as well in that case.
 - The CRM is in-memory and reseeds on every process restart.
+- **Guardrail**: a `before_model` middleware refuses destructive / out-of-scope
+  requests (bulk deletes, prompt-injection attempts) deterministically.
+- **Human-in-the-loop**: `interrupt_on={"write_file": True, "edit_file": True}`
+  pauses for approval before the agent writes or edits any file (e.g. updating its
+  own `/memory/AGENTS.md`). The checkpointer needed to pause/resume is supplied by
+  the runtime (`langgraph dev` / a LangSmith Deployment); approve or reject from
+  LangGraph Studio. Note: routine CRM reads/writes go through the tools, not the
+  filesystem, so they are *not* interrupted.
