@@ -1,0 +1,23 @@
+[project]
+name = "crm-agent"
+version = "0.1.0"
+description = "A DeepAgents CRM agent: reads/creates/edits records in a dummy multi-entity CRM, with skills and context hosted in the LangSmith Context Hub."
+requires-python = ">=3.11"
+dependencies = [
+    "deepagents",
+    "langchain",
+    "langchain-anthropic",
+    "langgraph-cli[inmem]",
+    "langsmith>=0.7.35",
+    "python-dotenv",
+]
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crm_agent"]
